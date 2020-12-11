@@ -1,0 +1,21 @@
+# Run the virtual framebuffer:
+Xvfb $DISPLAY -screen 0 1024x768x16 &
+#sleep 1
+
+# Run the minimalistic window manager:
+fluxbox &
+#sleep 1
+
+# Run the vnc server:
+x11vnc -display $DISPLAY -bg -forever -nopw -quiet -listen localhost -xkb &
+#sleep 1
+
+# Run the web novnc server:
+websockify -D --web=/usr/share/novnc/ 6080 localhost:5900 &
+
+echo
+echo "******************************************************"
+echo "In the browser go to: http://localhost:6080/vnc.html"
+echo "and connect with no password"
+echo "******************************************************"
+echo

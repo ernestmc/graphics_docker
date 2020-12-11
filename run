@@ -1,0 +1,27 @@
+#! /bin/bash
+
+DOCKER_IMAGE=graphics_docker
+CONTAINER_NAME=test-graphics-docker
+
+echo "Checking if $DOCKER_IMAGE docker image exists..."
+if [[ "$(docker images -q $DOCKER_IMAGE 2> /dev/null)" == "" ]]; then
+    echo "Image does not exist. Building it..."
+    docker build -t $DOCKER_IMAGE .
+else
+    echo "Image exists."
+fi
+
+if [[ $(docker start $CONTAINER_NAME 2> /dev/null) ]]; then
+    echo "$CONTAINER_NAME docker container exist. Connecting to the environment..."
+    docker exec -it $CONTAINER_NAME /bin/bash
+else
+    echo "$CONTAINER_NAME container doesn't exist. Starting the environment..."
+    docker run -it \
+    --name $CONTAINER_NAME \
+    -v $(pwd):/test \
+    --env DISPLAY=:0 \
+    -p 6080:6080 \
+    -w /test \
+    $DOCKER_IMAGE \
+    /bin/bash
+fi
